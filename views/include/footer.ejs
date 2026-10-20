@@ -1,0 +1,117 @@
+<!-- Footer -->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row">
+            <!-- About Section -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <div class="footer-logo mb-3">
+                    <img src="<%= settings && settings.logo ? '/uploads/' + settings.logo : '/images/logo.png' %>" height="75px" alt="Vedik Abode Logo">
+                </div>
+                <p class="text-muted">Premium living spaces designed for comfort, security, and convenience.</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <h5 class="footer-title fw-bold mb-3">Quick Links</h5>
+                <ul class="list-unstyled footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#service">Rooms</a></li>
+                    <li><a href="#Testomonial">Testimonial</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+                <h5 class="footer-title fw-bold mb-3">Contact Info</h5>
+                <ul class="list-unstyled footer-contact">
+                    <li><i class="bi bi-geo-alt-fill"></i>
+                        <% if (settings && settings.address) { %>
+                            <p>
+                                <%= settings.address %>
+                            </p>
+                            <% } %>
+                    </li>
+                    <li><i class="bi bi-telephone-fill"></i>
+                        <% if (settings && settings.phone) { %>
+                            <a href="tel:<%= settings.phone %>" style="color: white; text-decoration: none;">
+                                <%= settings.phone %>
+                            </a>
+                            <% } %>
+                    </li>
+                    <li><i class="bi bi-envelope-fill"></i>
+                        <% if (settings && settings.email) { %>
+                            <a href="mailto:<%= settings.email %>" style="color: white; text-decoration: none;">
+                                <%= settings.email %>
+                            </a>
+                            <% } %>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="col-lg-3 col-md-6">
+                <h5 class="footer-title fw-bold mb-3">Subscribe</h5>
+                <p class="text-muted">Get latest updates on room availability.</p>
+                <form action="/subscribesubmit" method="post">
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control" placeholder="Your email">
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-send-fill"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-top mt-4 pt-4">
+            <div class="row text-center text-muted">
+                <div class="col-md-6">
+                    <p class="mb-0">© 2024 Vedik Abode. All rights reserved.</p>
+                </div>
+                <div class="col-md-6">
+                    <div class="footer-social">
+                        <% if (settings && settings.facebook) { %>
+                            <a href="<%= settings.facebook %>" target="_blank" rel="noopener noreferrer"
+                                aria-label="Facebook">
+                                <i class="bi bi-facebook"></i>
+                            </a>
+                            <% } %>
+                                <% if (settings && settings.instagram) { %>
+                                    <a href="<%= settings.instagram %>" target="_blank" rel="noopener noreferrer"
+                                        aria-label="Instagram">
+                                        <i class="bi bi-instagram"></i>
+                                    </a>
+                                    <% } %>
+                                        <% if (settings && settings.linkedin) { %>
+                                            <a href="<%= settings.linkedin %>" target="_blank" rel="noopener noreferrer"
+                                                aria-label="LinkedIn">
+                                                <i class="bi bi-linkedin"></i>
+                                            </a>
+                                            <% } %>
+
+                                                <% if (settings && settings.twitter) { %>
+                                                    <a href="<%= settings.twitter %>" target="_blank"
+                                                        rel="noopener noreferrer" aria-label="X / Twitter">
+                                                        <i class="bi bi-twitter-x"></i>
+                                                    </a>
+                                                    <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</footer>
+
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/assets/js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

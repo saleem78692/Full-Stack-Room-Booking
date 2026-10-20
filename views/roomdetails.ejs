@@ -1,0 +1,343 @@
+<%- include('include/header.ejs') %>
+
+    <div class="container py-5">
+        <div class="row g-4 mb-5">
+
+            <!-- Left Side - Room Image -->
+            <div class="col-lg-6">
+                <div class="card detail-card overflow-hidden shadow-sm border-0 rounded-4 h-75">
+                    <% if (room.image) { %>
+                        <img src="/uploads/<%= room.image %>" alt="Room <%= room.roomnumber %>"
+                            class="room-image img-fluid w-100 h-100 object-fit-cover">
+                        <% } else { %>
+                            <div class="d-flex align-items-center justify-content-center bg-light h-100 min-vh-40 p-5"
+                                style="border-radius: 16px;">
+                                <div class="text-center text-muted">
+                                    <i class="bi bi-image display-1 text-secondary opacity-50"></i>
+                                    <p class="mt-3 fw-medium">No Image Available</p>
+                                </div>
+                            </div>
+                            <% } %>
+                </div>
+            </div>
+
+            <!-- Right Side - Room Details -->
+            <div class="col-lg-6">
+                <div class="card detail-card border-0 shadow-sm rounded-4 h-75">
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-4">
+                            <div>
+                                <h2 class="fw-bold mb-1 text-dark">Room <%= room.roomnumber %>
+                                </h2>
+                                <p class="text-muted mb-0">
+                                    <%= room.roomtype %> Room
+                                </p>
+                            </div>
+                            <span
+                                class="badge rounded-pill px-3 py-2 fs-6 <%= room.roomstatus === 'Available' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger' %>">
+                                <%= room.roomstatus %>
+                            </span>
+                        </div>
+
+                        <hr class="text-muted opacity-25 my-4">
+
+                        <!-- Info Grid -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-6">
+                                <div class="text-uppercase small fw-bold text-muted mb-1">Room Type</div>
+                                <div class="fw-semibold text-dark fs-6 d-flex align-items-center gap-2">
+                                    <i class="bi bi-door-open fs-5"></i>
+                                    <%= room.roomtype %>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-uppercase small fw-bold text-muted mb-1">Floor</div>
+                                <div class="fw-semibold text-dark fs-6 d-flex align-items-center gap-2">
+                                    <i class="bi bi-layers fs-5"></i>
+                                    Floor <%= room.roomfloor %>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-uppercase small fw-bold text-muted mb-1">Price / Night</div>
+                                <div class="fw-bold text-black fs-4">
+                                    ₹ <%= room.roomrupees %>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-uppercase small fw-bold text-muted mb-1">Status</div>
+                                <div class="fw-semibold text-dark fs-6 d-flex align-items-center gap-2">
+                                    <% if(room.roomstatus==='Available' ) { %>
+                                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                        <% } else { %>
+                                            <i class="bi bi-x-circle-fill text-danger fs-5"></i>
+                                            <% } %>
+                                                <%= room.roomstatus %>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <div class="text-uppercase small fw-bold text-muted mb-2">Description / Amenities</div>
+                            <p class="text-secondary mb-0 lh-base">
+                                <%= room.roomdesc ? room.roomdesc : 'No description available.' %>
+                            </p>
+                        </div>
+
+                        <!-- Reviews Button -->
+                        <button type="button" class="btn btn-warning fw-bold rounded-pill px-4" data-bs-toggle="modal"
+                            data-bs-target="#reviewsModal">
+                            <i class="bi bi-chat-square-text me-2"></i> View Reviews
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Terms & Conditions Section (Static) -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-header text-white p-4 border-0" style="background-color: #0b1f4d;">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-file-earmark-text fs-2"></i>
+                            <div>
+                                <h4 class="mb-0 fw-bold">Terms & Conditions</h4>
+                                <small class="text-white-50">Please read the rules and regulations carefully</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-4 p-md-5 bg-white">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">1</span>
+                                    <div class="text-secondary small fw-medium">Tenants are responsible for the safety
+                                        and security of their own belongings.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">2</span>
+                                    <div class="text-secondary small fw-medium">Advance payment is strictly
+                                        non-refundable.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">3</span>
+                                    <div class="text-secondary small fw-medium">The landlord and caretaker are not
+                                        responsible for any loss or theft.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">4</span>
+                                    <div class="text-secondary small fw-medium">Tenants must inform 15 days prior to
+                                        vacating; otherwise, full month's rent will be charged.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">5</span>
+                                    <div class="text-secondary small fw-medium">If a water tap is left open, the room
+                                        lock will be broken and a ₹500 penalty will be imposed.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">6</span>
+                                    <div class="text-secondary small fw-medium">The landlord will not be responsible for
+                                        any disputes or incidents on the premises.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">7</span>
+                                    <div class="text-secondary small fw-medium">A security deposit of ₹2,000 must be
+                                        paid, refundable upon room vacation.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">8</span>
+                                    <div class="text-secondary small fw-medium">Security deposit will only be refunded
+                                        if the stay duration is at least two months.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">9</span>
+                                    <div class="text-secondary small fw-medium">For any issues or queries, please
+                                        contact the caretaker directly.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">10</span>
+                                    <div class="text-secondary small fw-medium">Rent must be paid by the 15th of every
+                                        month. A penalty of ₹100/day will apply thereafter.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">11</span>
+                                    <div class="text-secondary small fw-medium">If leaving the room locked for more than
+                                        2 days, informing the caretaker is mandatory. Otherwise, the lock will be
+                                        broken.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">12</span>
+                                    <div class="text-secondary small fw-medium">Tenants must submit 1 passport-size
+                                        photo, a photocopy of government ID proof, and home contact number.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">13</span>
+                                    <div class="text-secondary small fw-medium">Booking amount will not be refunded in
+                                        case of cancellation or non-occupancy.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-start gap-3 p-3 rounded-3 bg-light h-100">
+                                    <span class="badge rounded-circle p-2 px-3"
+                                        style="background-color: #0b1f4d;">14</span>
+                                    <div class="text-secondary small fw-medium">Security amount will be refunded at the
+                                        time of vacating only after completing a minimum stay of three months.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Dynamic Reviews Section -->
+    <section class="container mb-5">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <h3 class="fw-bold mb-1">Guest Reviews</h3>
+                <p class="text-muted mb-0">What guests say about their stay</p>
+            </div>
+            <button type="button" class="btn btn-outline-primary rounded-pill px-4" data-bs-toggle="modal"
+                data-bs-target="#reviewsModal">
+                <i class="bi bi-pencil-square me-2"></i> Write a Review
+            </button>
+        </div>
+
+
+        <div class="row g-4">
+            <% review.forEach(item=> { %>
+                <div class="col-12 col-sm-6 col-lg-4 d-flex">
+                    <div class="card h-100 w-100 border-0 shadow-sm rounded-4">
+                        <div class="card-body p-4 d-flex flex-column">
+
+                            <!-- Dynamic Star Rating -->
+                            <div class="text-warning mb-3" aria-label="<%= item.rating %> out of 5 stars">
+                                <% for (let i=1; i <=5; i++) { %>
+                                    <% if (i <=Number(item.rating)) { %>
+                                        <i class="bi bi-star-fill"></i>
+                                        <% } else { %>
+                                            <i class="bi bi-star"></i>
+                                            <% } %>
+                                                <% } %>
+
+                                                    <span class="text-dark small ms-2">
+                                                        <%= item.rating %>/5
+                                                    </span>
+                            </div>
+
+                            <!-- Reviewer Name -->
+                            <h6 class="fw-bold mb-1">
+                                <i class="bi bi-person-circle me-1 text-secondary"></i>
+                                <%= item.name %>
+                            </h6>
+
+                            <small class="text-muted mb-3">
+                                <i class="bi bi-clock me-1"></i>
+                                Guest Review
+                            </small>
+
+                            <!-- Review Message -->
+                            <p class="text-secondary mb-0 flex-grow-1">
+                                <%= item.message %>
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+        </div>
+
+    </section>
+
+    <!-- Reviews Modal -->
+    <div class="modal fade" id="reviewsModal" tabindex="-1" aria-labelledby="reviewsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold" id="reviewsModalLabel">Share Your Review</h5>
+                        <p class="text-muted small mb-0">Tell us about your experience</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/reviewsubmit" method="post">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="reviewName" class="form-label fw-semibold">Your Name</label>
+                            <input type="text" name="name" class="form-control rounded-3" id="reviewName"
+                                placeholder="Enter your name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewRating" class="form-label fw-semibold">Rating</label>
+                            <select name="rating" class="form-select rounded-3" id="reviewRating" required>
+                                <option value="5">5 - Excellent</option>
+                                <option value="4">4 - Very Good</option>
+                                <option value="3">3 - Good</option>
+                                <option value="2">2 - Fair</option>
+                                <option value="1">1 - Poor</option>
+                            </select>
+                        </div>
+                        <div class="mb-0">
+                            <label for="reviewMessage" class="form-label fw-semibold">Your Review</label>
+                            <textarea name="message" class="form-control rounded-3" id="reviewMessage" rows="3"
+                                placeholder="Write your review..." required></textarea>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer border-0 pt-0">
+                        <button type="button" class="btn btn-light rounded-pill px-4"
+                            data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">Submit Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <%- include('include/footer.ejs') %>

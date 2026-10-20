@@ -566,18 +566,27 @@ app.get("/logout", (req, res) => {
   });
 });
 
+const PORT = process.env.PORT || 3000;
+
 async function startServer() {
   try {
-    await mongoose.connect(process.env.MONGO_URL);
-    console.log("Database Connected");
+    if (!process.env.MONGO_URL) {
+      throw new Error(
+        "MONGO_URL is not defined! Please set MONGO_URL in your Environment Variables (e.g. Render Dashboard or .env).",
+      );
+    }
 
-    app.listen(3000, () => {
-      console.log("Server running on port 3000");
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("Database Connected Successfully");
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to connect to MongoDB:", error);
-    process.exitCode = 1;
+    console.error("Failed to connect to MongoDB:", error.message || error);
+    process.exit(1);
   }
 }
 
 startServer();
+

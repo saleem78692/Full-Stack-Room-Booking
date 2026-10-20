@@ -44,7 +44,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(async (req, res, next) => {
   try {
-    res.locals.settings = await Setting.findOne().lean();
+    res.locals.settings = (await Setting.findOne().lean()) || {};
     next();
   } catch (err) {
     next(err);
@@ -578,6 +578,16 @@ async function startServer() {
 
     await mongoose.connect(process.env.MONGO_URL);
     console.log("Database Connected Successfully");
+
+    // Create default admin if none exists
+    const adminCount = await Admin.countDocuments();
+    if (adminCount === 0) {
+      const email = process.env.ADMIN_EMAIL || "admin@gmail.com";
+      const password = process.env.ADMIN_PASSWORD || "admin123";
+      const admin = new Admin({ email, password });
+      await admin.save();
+      console.log(`Default admin created -> Email: ${email} | Password: ${password}`);
+    }
 
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);

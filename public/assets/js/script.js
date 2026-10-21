@@ -59,9 +59,10 @@ filterButtons.forEach(button => {
 const gallery = document.querySelector(".gallerySwiper");
 
 if (gallery) {
+    const slideCount = gallery.querySelectorAll(".swiper-slide").length;
     const swiper = new Swiper(".gallerySwiper", {
 
-        loop: true,
+        loop: slideCount > 3,
 
         speed: 800,
 
@@ -71,13 +72,13 @@ if (gallery) {
 
         centeredSlides: false,
 
-        autoplay: {
+        autoplay: slideCount > 1 ? {
 
             delay: 3000,
 
             disableOnInteraction: false,
 
-        },
+        } : false,
 
         pagination: {
 

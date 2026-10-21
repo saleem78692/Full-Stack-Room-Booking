@@ -15,6 +15,7 @@ const Contact = require("./models/contact.models");
 const Review = require("./models/review.models");
 const Subscribe = require("./models/subscribe.models");
 const Setting = require("./models/setting.models");
+const Gallery = require("./models/gallery.models");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
@@ -223,8 +224,10 @@ app.get("/", async (req, res) => {
   try {
     const rooms = await RoomBooking.find();
     const review = await Review.find().sort({ createdAt: -1 });
+    const gallery = await Gallery.find().sort({ createdAt: -1 });
     res.render("index", {
       rooms,
+      gallery,
       success: req.query.success || null,
       error: req.query.error || null,
       bookingSuccess: req.query.booking === "success",
@@ -233,9 +236,11 @@ app.get("/", async (req, res) => {
   } catch (error) {
     res.render("index", {
       rooms: [],
+      gallery: [],
       success: null,
       error: "Error loading rooms",
       bookingSuccess: false,
+      review: [],
     });
   }
 });
@@ -356,6 +361,106 @@ app.get("/room/:id", async (req, res) => {
   }
 });
 
+// Gallery Routes
+// Save Gallery Image
+app.post(
+  "/savegallery",
+  requireAdminLogin,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { title, subtitle } = req.body;
+      const imagePath = getUploadedFilePath(req.file);
+
+      if (!title || !title.trim()) {
+        return res.redirect("/dashboard?error=Gallery title is required");
+      }
+
+      if (!imagePath) {
+        return res.redirect("/dashboard?error=Please select an image to upload");
+      }
+
+      const galleryItem = new Gallery({
+        title: title.trim(),
+        subtitle: (subtitle || "").trim(),
+        image: imagePath,
+      });
+
+      await galleryItem.save();
+      res.redirect("/dashboard?success=Gallery image uploaded successfully!");
+    } catch (error) {
+      console.error("Gallery Save Error:", error);
+      res.redirect("/dashboard?error=Failed to upload gallery image");
+    }
+  },
+);
+
+// Edit Gallery Image
+app.post(
+  "/editgallery/:id",
+  requireAdminLogin,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { title, subtitle } = req.body;
+      const galleryId = req.params.id;
+
+      const item = await Gallery.findById(galleryId);
+      if (!item) {
+        return res.redirect("/dashboard?error=Gallery item not found");
+      }
+
+      if (title && title.trim()) {
+        item.title = title.trim();
+      }
+      if (typeof subtitle !== "undefined") {
+        item.subtitle = subtitle.trim();
+      }
+
+      if (req.file) {
+        if (item.image && !item.image.startsWith("http") && !item.image.startsWith("/")) {
+          const oldImagePath = path.join(__dirname, "uploads", item.image);
+          if (fs.existsSync(oldImagePath)) {
+            try {
+              fs.unlinkSync(oldImagePath);
+            } catch (e) {
+              console.log("Failed to remove old local gallery image:", e.message);
+            }
+          }
+        }
+        item.image = getUploadedFilePath(req.file);
+      }
+
+      await item.save();
+      res.redirect("/dashboard?success=Gallery item updated successfully");
+    } catch (err) {
+      console.error("Gallery Update Error:", err);
+      res.redirect("/dashboard?error=Failed to update gallery item");
+    }
+  },
+);
+
+// Delete Gallery Image
+app.get("/deletegallery/:id", requireAdminLogin, async (req, res) => {
+  try {
+    const item = await Gallery.findByIdAndDelete(req.params.id);
+
+    if (item && item.image && !item.image.startsWith("http") && !item.image.startsWith("/")) {
+      const filepath = path.join(__dirname, "uploads", item.image);
+      if (fs.existsSync(filepath)) {
+        fs.unlink(filepath, (err) => {
+          if (err) console.log("Failed to delete local gallery image:", err.message);
+        });
+      }
+    }
+
+    res.redirect("/dashboard?success=Gallery image deleted successfully");
+  } catch (err) {
+    console.error("Gallery Delete Error:", err);
+    res.redirect("/dashboard?error=Failed to delete gallery image");
+  }
+});
+
 app.get("/dashboard", requireAdminLogin, async (req, res) => {
   res.set({
     "Cache-Control": "no-store, no-cache, must-revalidate, private",
@@ -369,6 +474,7 @@ app.get("/dashboard", requireAdminLogin, async (req, res) => {
     const contact = await Contact.find().sort({ createdAt: -1 });
     const review = await Review.find().sort({ createdAt: -1 });
     const subscribe = await Subscribe.find().sort({ createdAt: -1 });
+    const gallery = await Gallery.find().sort({ createdAt: -1 });
     let settings = await Setting.findOne();
     if (!settings) {
       settings = await Setting.create({});
@@ -385,6 +491,7 @@ app.get("/dashboard", requireAdminLogin, async (req, res) => {
       review,
       subscribe,
       settings,
+      gallery,
       success: req.query.success || null,
       error: req.query.error || null,
     });
@@ -394,6 +501,10 @@ app.get("/dashboard", requireAdminLogin, async (req, res) => {
       room: [],
       bookings: [],
       contact: [],
+      review: [],
+      subscribe: [],
+      gallery: [],
+      settings: {},
       success: null,
       error: "Error loading data",
     });

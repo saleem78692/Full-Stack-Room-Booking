@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const settingSchema = new mongoose.Schema({
     logo: {
         type: String,
-        default: 'logo.png'
+        default: '/assets/images/bhadauriyaEnterprises.png'
     },
     address: {
         type: String,

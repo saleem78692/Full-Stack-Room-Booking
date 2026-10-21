@@ -77,8 +77,8 @@
                 <div class="container">
 
                     <a class="navbar-brand fw-boldtext-primary" href="/">
-                        <img src="<%= settings && settings.logo ? '/uploads/' + settings.logo : 'public/assets/images/bhadauriyaEnterprises.png' %>"
-                            height="70px" alt="">
+                        <img src="<%= settings && settings.logo ? (settings.logo.startsWith('http') || settings.logo.startsWith('/') ? settings.logo : '/uploads/' + settings.logo) : '/assets/images/bhadauriyaEnterprises.png' %>"
+                            height="70px" alt="Bhadauriya Enterprises" onerror="this.onerror=null;this.src='/assets/images/bhadauriyaEnterprises.png';">
                     </a>
 
                     <!-- Mobile Button -->
@@ -134,8 +134,9 @@
 
                 <div class="offcanvas-header">
 
-                    <a class="navbar-brand fw-bold fs-3 text-primary" href="#">
-                        <img src="<%= settings && settings.logo ? '/uploads/' + settings.logo : '/images/logo.png' %>" height="60px" alt="">
+                    <a class="navbar-brand fw-bold fs-3 text-primary" href="/">
+                        <img src="<%= settings && settings.logo ? (settings.logo.startsWith('http') || settings.logo.startsWith('/') ? settings.logo : '/uploads/' + settings.logo) : '/assets/images/bhadauriyaEnterprises.png' %>"
+                            height="60px" alt="Bhadauriya Enterprises" onerror="this.onerror=null;this.src='/assets/images/bhadauriyaEnterprises.png';">
                     </a>
 
                     <button class="btn-close" data-bs-dismiss="offcanvas">

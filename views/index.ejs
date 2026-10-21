@@ -54,7 +54,7 @@
 
                 <!-- Call -->
 
-                <a href="tel:+919958087218" class="call-btn">
+                <a href="tel:<%= settings.phone %>" class="call-btn">
 
                     <i class="bi bi-telephone-fill"></i>
 
@@ -62,7 +62,7 @@
 
                 <!-- WhatsApp -->
 
-                <a href="https://wa.me/919958087218?text=Hello%20Bhadhauriya%20Enterprises!%20%F0%9F%91%8B%0A%0AI%20want%20to%20book%20a%20room.%20Please%20share%20the%20details.%0A%0A%E2%9C%85%20Room%20Availability%0A%E2%9C%85%20Rent%20Details%0A%E2%9C%85%20Facilities%0A%E2%9C%85%20Location%0A%0AThank%20You!"
+                <a href="https://wa.me/<%= settings.phone %>?text=Hello%20Bhadhauriya%20Enterprises!%20%F0%9F%91%8B%0A%0AI%20want%20to%20book%20a%20room.%20Please%20share%20the%20details.%0A%0A%E2%9C%85%20Room%20Availability%0A%E2%9C%85%20Rent%20Details%0A%E2%9C%85%20Facilities%0A%E2%9C%85%20Location%0A%0AThank%20You!"
                     target="_blank" class="whatsapp-btn">
 
                     <i class="bi bi-whatsapp"></i>
@@ -251,8 +251,8 @@
                                 <div class="room-card">
                                     <div class="room-image">
                                         <% if (room.image) { %>
-                                            <img src="/uploads/<%= room.image %>" class="img-fluid"
-                                                alt="Room <%= room.roomnumber %>">
+                                            <img src="<%= room.image.startsWith('http') || room.image.startsWith('/') ? room.image : '/uploads/' + room.image %>" class="img-fluid"
+                                                alt="Room <%= room.roomnumber %>" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?q=80&w=880&auto=format&fit=crop';">
                                             <% } else { %>
                                                 <img src="https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?q=80&w=880&auto=format&fit=crop"
                                                     class="img-fluid" alt="No Image">

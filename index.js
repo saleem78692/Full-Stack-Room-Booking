@@ -15,6 +15,10 @@ const Contact = require("./models/contact.models");
 const Review = require("./models/review.models");
 const Subscribe = require("./models/subscribe.models");
 const Setting = require("./models/setting.models");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+const DEFAULT_LOGO = "/assets/images/bhadauriyaEnterprises.png";
 
 app.use(
   session({
@@ -44,7 +48,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use(async (req, res, next) => {
   try {
-    res.locals.settings = (await Setting.findOne().lean()) || {};
+    let settings = (await Setting.findOne().lean()) || {};
+    if (!settings.logo || settings.logo === "logo.png") {
+      settings.logo = DEFAULT_LOGO;
+    }
+    res.locals.settings = settings;
     next();
   } catch (err) {
     next(err);
@@ -146,16 +154,45 @@ app.post("/update-password", requireAdminLogin, async (req, res) => {
   }
 });
 
-//Image upload middleware
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads");
-  },
-  filename: (req, file, cb) => {
-    const newfilename = Date.now() + path.extname(file.originalname);
-    cb(null, newfilename);
-  },
-});
+// Cloudinary & Multer configuration
+let storage;
+
+if (
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: "room_booking",
+      allowed_formats: ["jpg", "png", "jpeg", "webp", "svg"],
+    },
+  });
+  console.log("Cloudinary Storage configured successfully.");
+} else {
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const uploadDir = path.join(__dirname, "uploads");
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+      const newfilename = Date.now() + path.extname(file.originalname);
+      cb(null, newfilename);
+    },
+  });
+  console.log("Falling back to local disk storage for uploads.");
+}
+
 const filefilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);
@@ -163,13 +200,23 @@ const filefilter = (req, file, cb) => {
     cb(new Error("Only Image are allowed..!"));
   }
 };
+
 const upload = multer({
   storage: storage,
   fileFilter: filefilter,
   limits: {
-    fileSize: 1024 * 1024 * 3,
+    fileSize: 1024 * 1024 * 5, // 5MB
   },
 });
+
+// Helper to extract uploaded file URL or filename
+function getUploadedFilePath(file) {
+  if (!file) return undefined;
+  if (file.path && (file.path.startsWith("http://") || file.path.startsWith("https://"))) {
+    return file.path;
+  }
+  return file.filename;
+}
 
 //Home page
 app.get("/", async (req, res) => {
@@ -207,7 +254,7 @@ app.post(
         roomrupees: req.body.roomrupees,
         roomstatus: req.body.roomstatus,
         roomdesc: req.body.roomdesc,
-        image: req.file ? req.file.filename : undefined,
+        image: getUploadedFilePath(req.file),
       });
 
       await roomData.save();
@@ -224,11 +271,13 @@ app.get("/delete/:id", requireAdminLogin, async (req, res) => {
   try {
     const room = await RoomBooking.findByIdAndDelete(req.params.id);
 
-    if (room && room.image) {
+    if (room && room.image && !room.image.startsWith("http") && !room.image.startsWith("/")) {
       const filepath = path.join(__dirname, "uploads", room.image);
-      fs.unlink(filepath, (err) => {
-        if (err) console.log("Failed to delete image:", err.message);
-      });
+      if (fs.existsSync(filepath)) {
+        fs.unlink(filepath, (err) => {
+          if (err) console.log("Failed to delete image:", err.message);
+        });
+      }
     }
 
     res.redirect("/dashboard?success=Room deleted successfully");
@@ -266,13 +315,17 @@ app.post(
       room.roomdesc = roomdesc;
 
       if (req.file) {
-        if (room.image) {
+        if (room.image && !room.image.startsWith("http") && !room.image.startsWith("/")) {
           const oldImagePath = path.join(__dirname, "uploads", room.image);
           if (fs.existsSync(oldImagePath)) {
-            fs.unlinkSync(oldImagePath);
+            try {
+              fs.unlinkSync(oldImagePath);
+            } catch (e) {
+              console.log("Failed to remove old local image:", e.message);
+            }
           }
         }
-        room.image = req.file.filename;
+        room.image = getUploadedFilePath(req.file);
       }
 
       await room.save();
@@ -319,6 +372,9 @@ app.get("/dashboard", requireAdminLogin, async (req, res) => {
     let settings = await Setting.findOne();
     if (!settings) {
       settings = await Setting.create({});
+    }
+    if (!settings.logo || settings.logo === "logo.png") {
+      settings.logo = DEFAULT_LOGO;
     }
 
     res.render("dashboard", {
@@ -535,7 +591,7 @@ app.post(
       });
 
       if (req.file) {
-        updateData.logo = req.file.filename;
+        updateData.logo = getUploadedFilePath(req.file);
       }
 
       await Setting.findOneAndUpdate(

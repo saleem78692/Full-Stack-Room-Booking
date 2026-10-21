@@ -439,8 +439,8 @@
                                                 </td>
                                                 <td>
                                                     <% if(item.image) { %>
-                                                        <img src="/uploads/<%= item.image %>" alt="Room" width="60"
-                                                            height="40" style="object-fit:cover; border-radius:4px;">
+                                                        <img src="<%= item.image.startsWith('http') || item.image.startsWith('/') ? item.image : '/uploads/' + item.image %>" alt="Room" width="60"
+                                                            height="40" style="object-fit:cover; border-radius:4px;" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1616047006789-b7af5afb8c20?q=80&w=880&auto=format&fit=crop';">
                                                         <% } else { %>
                                                             No Image
                                                             <% } %>
@@ -881,10 +881,11 @@
 
                                 <div class="mb-4">
                                     <div class="mb-3">
-                                        <img src="<%= settings.logo ? '/uploads/' + settings.logo : '/images/logo.png' %>"
+                                        <img src="<%= settings && settings.logo ? (settings.logo.startsWith('http') || settings.logo.startsWith('/') ? settings.logo : '/uploads/' + settings.logo) : '/assets/images/bhadauriyaEnterprises.png' %>"
                                             alt="Current Logo"
                                             style="max-width:180px; max-height:90px; object-fit:contain;"
-                                            class="border rounded p-2">
+                                            class="border rounded p-2"
+                                            onerror="this.onerror=null;this.src='/assets/images/bhadauriyaEnterprises.png';">
                                     </div>
 
                                     <label class="form-label">Upload New Logo</label>
@@ -1274,7 +1275,7 @@
                 // Handle current image
                 const imgTag = document.getElementById('edit-current-image');
                 if (image) {
-                    imgTag.src = `/uploads/${image}`;
+                    imgTag.src = (image.startsWith('http') || image.startsWith('/')) ? image : `/uploads/${image}`;
                     imgTag.classList.remove('d-none');
                 } else {
                     imgTag.classList.add('d-none');
